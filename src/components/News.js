@@ -101,6 +101,9 @@ export class News extends Component {
                     }
                     imageUrl={news.urlToImage ? news.urlToImage : "logo512.png"}
                     newsUrl={news.url ? news.url : ""}
+                    date={news.publishedAt}
+                    author={news.author}
+                    source={news.source.name}
                   />
                 </div>
               );

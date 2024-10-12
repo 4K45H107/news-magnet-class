@@ -2,23 +2,56 @@ import React, { Component } from "react";
 import NewsItem from "./NewsItem";
 
 export class News extends Component {
-  articles = []
+  articles = [];
 
   constructor() {
     super();
-    console.log("News component Constructor");
-    this.state = { articles: this.articles, loading: false };
+    this.state = {
+      articles: this.articles,
+      loading: false,
+      page: 1,
+    };
   }
 
   async componentDidMount() {
-    console.log("cdm");
     let url =
-      "https://newsapi.org/v2/top-headlines?country=us&apiKey=e400277eec9d4a72ba10fb0a3eec8386";
+      "https://newsapi.org/v2/top-headlines?country=us&apiKey=e400277eec9d4a72ba10fb0a3eec8386&page=1&pageSize=20";
     let data = await fetch(url);
     let parsedData = await data.json();
 
-    this.setState({ articles: parsedData.articles });
+    this.setState({
+      articles: parsedData.articles,
+      totalArticles: parsedData.totalResults,
+    });
   }
+
+  handleNext = async () => {
+    console.log("Next");
+    if (this.state.page + 1 > Math.ceil(this.state.totalArticles / 20)) {
+    } else {
+      let url = `https://newsapi.org/v2/top-headlines?country=us&apiKey=e400277eec9d4a72ba10fb0a3eec8386&page=${
+        this.state.page + 1
+      }&pageSize=20`;
+      let data = await fetch(url);
+      let parsedData = await data.json();
+
+      this.setState({
+        articles: parsedData.articles,
+        page: this.state.page + 1,
+      });
+    }
+  };
+
+  handlePrevious = async () => {
+    console.log("Prev");
+    let url = `https://newsapi.org/v2/top-headlines?country=us&apiKey=e400277eec9d4a72ba10fb0a3eec8386&page=${
+      this.state.page - 1
+    }&pageSize=20`;
+    let data = await fetch(url);
+    let parsedData = await data.json();
+
+    this.setState({ articles: parsedData.articles, page: this.state.page - 1 });
+  };
 
   render() {
     return (
@@ -39,6 +72,23 @@ export class News extends Component {
               </div>
             );
           })}
+        </div>
+        <div className="container d-flex justify-content-between">
+          <button
+            type="button"
+            className="btn btn-dark"
+            onClick={this.handlePrevious}
+            disabled={this.state.page <= 1}
+          >
+            &larr; Previous
+          </button>
+          <button
+            type="button"
+            className="btn btn-dark"
+            onClick={this.handleNext}
+          >
+            Next &rarr;
+          </button>
         </div>
       </div>
     );
